@@ -6,6 +6,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -32,5 +33,17 @@ class AuthController extends Controller
 		}
 
 		return response()->json(['errors' => ['email' => 'Invalid credentials']], 422);
+	}
+
+	public function logout(Request $request): JsonResponse
+	{
+		$user = $request->user();
+
+		auth('web')->logout();
+
+		$request->session()->invalidate();
+		$request->session()->regenerateToken();
+
+		return response()->json(['message' => 'Logged out successfully'], 201);
 	}
 }
