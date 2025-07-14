@@ -12,7 +12,7 @@ class RegisterRequest extends FormRequest
 
 		return [
 			'name'     => ['required', 'min:3', 'max:15', 'unique:users', "regex:{$lowercaseAndNumbers}"],
-			'email'    => ['required', 'email'],
+			'email'    => ['required', 'email', 'unique:users'],
 			'password' => ['required', 'confirmed', 'min:8', 'max:15', "regex:{$lowercaseAndNumbers}"],
 		];
 	}

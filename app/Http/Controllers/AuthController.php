@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -11,12 +12,25 @@ class AuthController extends Controller
 {
 	public function register(RegisterRequest $request): JsonResponse
 	{
-		$attributes = $request->validated();
+		$credentials = $request->validated();
 
-		$user = User::create($attributes);
+		$user = User::create($credentials);
 
 		Auth::login($user);
 
 		return response()->json(['user' => $user], 201);
+	}
+
+	public function login(LoginRequest $request): JsonResponse
+	{
+		$credentials = $request->validated();
+
+		if (Auth::attempt($credentials)) {
+			$request->session()->regenerate();
+
+			return response()->json(['message' => 'Login successful'], 201);
+		}
+
+		return response()->json(['errors' => ['email' => 'Invalid credentials']], 422);
 	}
 }
