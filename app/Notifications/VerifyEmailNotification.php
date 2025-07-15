@@ -25,15 +25,15 @@ class VerifyEmailNotification extends Notification
 	public function toMail(object $notifiable): MailMessage
 	{
 		$verificationUrl = $this->verificationUrl($notifiable);
-		$title = 'Verify your email address to get started';
-		$content = "Hi {$notifiable->name},\n\nYou're almost there! To complete the sign up, please verify your email address.";
-		$linkName = 'Verify now';
+		$name = $notifiable->name;
+		$content = 'Thanks for joining Movie quotes! We really appreciate it. Please click the button below to verify your account:';
+		$linkName = 'Verify account';
 
 		return (new MailMessage)
 			->subject('Please verify your email')
 			->markdown('email.index', [
 				'url'      => $verificationUrl,
-				'title'    => $title,
+				'name'     => $name,
 				'content'  => $content,
 				'linkName' => $linkName,
 			]);

@@ -32,7 +32,7 @@ class AuthController extends Controller
 		if (Auth::attempt($credentials)) {
 			$request->session()->regenerate();
 
-			return response()->json(['message' => 'Login successful'], 200);
+			return response()->json(['message' => 'Login successful'], 201);
 		}
 
 		return response()->json(['errors' => ['email' => ['Invalid credentials']]], 422);
