@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
@@ -13,4 +14,9 @@ Route::controller(AuthController::class)->group(function () {
 		Route::post('/logout', 'logout')->name('logout');
 		Route::get('/user', 'getUser')->name('getUser');
 	});
+});
+
+Route::controller(VerificationController::class)->prefix('email')->name('verification')->group(function () {
+	Route::post('/check-verify-token', 'checkToken')->name('.checkToken');
+	Route::post('/verify', 'verify')->middleware(['auth:sanctum', 'throttle:6,1'])->name('.verify');
 });
