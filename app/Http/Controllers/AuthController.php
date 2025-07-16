@@ -35,7 +35,10 @@ class AuthController extends Controller
 			return response()->json(['message' => 'Login successful'], 201);
 		}
 
-		return response()->json(['errors' => ['email' => ['Invalid credentials']]], 422);
+		return response()->json(['errors' => [
+			'email'   => ['Invalid credentials'],
+			'password'=> ['Invalid credentials']],
+		], 422);
 	}
 
 	public function logout(Request $request): JsonResponse

@@ -17,6 +17,7 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 Route::controller(VerificationController::class)->prefix('email')->name('verification')->group(function () {
-	Route::post('/check-verify-token', 'checkToken')->name('.checkToken');
+	Route::post('/check-token', 'checkToken')->name('.checkToken');
+	Route::post('/request-verification', 'requestVerification')->middleware('throttle:1,120')->name('.requestVerification');
 	Route::post('/verify', 'verify')->middleware(['auth:sanctum', 'throttle:6,1'])->name('.verify');
 });

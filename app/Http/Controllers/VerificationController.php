@@ -30,6 +30,21 @@ class VerificationController extends Controller
 		return response()->json(['message' => 'Verification link is valid.'], 200);
 	}
 
+	public function requestVerification(): JsonResponse
+	{
+		$email = request('email');
+
+		$user = User::where('email', $email)->first();
+
+		if (!$user) {
+			return response()->json(['message' => 'User not found'], 404);
+		}
+
+		$user->sendEmailVerificationNotification();
+
+		return response()->json(['message' => 'Verification email sent'], 200);
+	}
+
 	public function verify(): JsonResponse
 	{
 		$token = request('token');
