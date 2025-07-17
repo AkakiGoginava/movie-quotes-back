@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -27,9 +28,12 @@ class AuthController extends Controller
 
 	public function login(LoginRequest $request): JsonResponse
 	{
-		$credentials = $request->validated();
+		$attributes = $request->validated();
 
-		if (Auth::attempt($credentials)) {
+		$credentials = Arr::only($attributes, ['email', 'password']);
+		$remember = $attributes['remember'] ?? false;
+
+		if (Auth::attempt($credentials, $remember)) {
 			$request->session()->regenerate();
 
 			return response()->json(['message' => 'Login successful'], 201);
