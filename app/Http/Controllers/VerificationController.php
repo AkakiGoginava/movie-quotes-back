@@ -20,6 +20,10 @@ class VerificationController extends Controller
 			return response()->json(['message' => 'User not found'], 404);
 		}
 
+		if ($user->email_verified_at) {
+			return response()->json(['message' => 'User is Already verified'], 409);
+		}
+
 		$user->sendEmailVerificationNotification();
 
 		return response()->json(['message' => 'Verification email sent'], 200);
