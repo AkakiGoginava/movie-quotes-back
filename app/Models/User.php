@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Notifications\ResetPasswordNotification;
 use App\Notifications\VerifyEmailNotification;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\CanResetPassword;
@@ -49,5 +50,14 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
 		]);
 
 		$this->notify(new VerifyEmailNotification($token));
+	}
+
+	public function sendPasswordResetNotification($token): void
+	{
+		$frontendUrl = env('FRONTEND_APP_URL');
+
+		$url = "{$frontendUrl}?action=reset-password&token=" . $token . '&email=' . $this->email;
+
+		$this->notify(new ResetPasswordNotification($url));
 	}
 }

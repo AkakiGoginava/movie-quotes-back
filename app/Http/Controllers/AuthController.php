@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
@@ -88,5 +91,29 @@ class AuthController extends Controller
 		}
 
 		return response()->json(['message' => 'Could not send link.'], 401);
+	}
+
+	public function resetPassword(ResetPasswordRequest $request): JsonResponse
+	{
+		$attributes = $request->validated();
+
+		$status = Password::reset(
+			$attributes,
+			function (User $user, string $password) {
+				$user->forceFill([
+					'password' => Hash::make($password),
+				]);
+
+				$user->save();
+
+				event(new PasswordReset($user));
+			}
+		);
+
+		if ($status === Password::PASSWORD_RESET) {
+			return response()->json(['message' => __($status)], 200);
+		}
+
+		return response()->json(['message' => __($status)], 422);
 	}
 }
