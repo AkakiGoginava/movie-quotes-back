@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
@@ -10,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -66,5 +68,25 @@ class AuthController extends Controller
 		}
 
 		return response()->json(['user' => $user]);
+	}
+
+	public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
+	{
+		$attributes = $request->validated();
+		$email = $attributes['email'];
+
+		if (!User::where('email', $email)->exists()) {
+			return response()->json(['errors' => [
+				'email'=> ['User with this email not found'],
+			]], 404);
+		}
+
+		$status = Password::sendResetLink(['email' => $email]);
+
+		if ($status === Password::ResetLinkSent) {
+			return response()->json(['message' => 'Link sent.'], 200);
+		}
+
+		return response()->json(['message' => 'Could not send link.'], 401);
 	}
 }
