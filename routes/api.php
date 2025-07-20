@@ -8,6 +8,7 @@ Route::controller(AuthController::class)->group(function () {
 	Route::middleware('guest')->group(function () {
 		Route::post('/register', 'register')->name('register');
 		Route::post('/login', 'login')->name('login');
+		Route::post('/google', 'googleAuth')->name('googleAuth');
 		Route::post('/forgot-password', 'forgotPassword')->name('forgotPassword');
 		Route::post('/reset-password', 'resetPassword')->name('resetPassword');
 	});

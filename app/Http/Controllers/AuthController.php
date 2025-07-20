@@ -7,6 +7,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
+use Exception;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
@@ -15,6 +16,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -50,10 +52,37 @@ class AuthController extends Controller
 		], 422);
 	}
 
+	public function googleAuth(Request $request): JsonResponse
+	{
+		$code = request('code');
+
+		if (!$code) {
+			return response()->json(['error' => 'Authorization code is required'], 400);
+		}
+
+		try {
+			$googleUser = Socialite::driver('google')->user();
+
+			$user = User::firstOrCreate(
+				['email' => $googleUser->getEmail()],
+				[
+					'name'              => $googleUser->getName(),
+					'google_id'         => $googleUser->getId(),
+					'email_verified_at' => now(),
+				]
+			);
+
+			Auth::login($user);
+			$request->session()->regenerate();
+
+			return response()->json(['user' => $user], 200);
+		} catch (Exception $e) {
+			return response()->json(['error' => 'Authentication failed'], 400);
+		}
+	}
+
 	public function logout(Request $request): JsonResponse
 	{
-		$user = $request->user();
-
 		auth('web')->logout();
 
 		$request->session()->invalidate();
