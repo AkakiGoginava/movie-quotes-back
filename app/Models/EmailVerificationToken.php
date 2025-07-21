@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmailVerificationToken extends Model
 {
-	protected $fillable = ['user_id', 'token', 'expires_at'];
+    protected $fillable = ['user_id', 'token', 'expires_at'];
 }

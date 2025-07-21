@@ -16,48 +16,47 @@ use Illuminate\Support\Str;
 
 class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
 {
-	use HasFactory;
+    use HasFactory;
+    use Notifiable;
 
-	use Notifiable;
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
 
-	protected $fillable = [
-		'name',
-		'email',
-		'password',
-	];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-	protected $hidden = [
-		'password',
-		'remember_token',
-	];
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password'          => 'hashed',
+        ];
+    }
 
-	protected function casts(): array
-	{
-		return [
-			'email_verified_at' => 'datetime',
-			'password'          => 'hashed',
-		];
-	}
+    public function sendEmailVerificationNotification(): void
+    {
+        $token = Str::random(64);
 
-	public function sendEmailVerificationNotification(): void
-	{
-		$token = Str::random(64);
+        EmailVerificationToken::create([
+            'user_id'    => $this->id,
+            'token'      => $token,
+            'expires_at' => Carbon::now()->addMinutes(120),
+        ]);
 
-		EmailVerificationToken::create([
-			'user_id'    => $this->id,
-			'token'      => $token,
-			'expires_at' => Carbon::now()->addMinutes(120),
-		]);
+        $this->notify(new VerifyEmailNotification($token));
+    }
 
-		$this->notify(new VerifyEmailNotification($token));
-	}
+    public function sendPasswordResetNotification($token): void
+    {
+        $frontendUrl = env('FRONTEND_APP_URL');
 
-	public function sendPasswordResetNotification($token): void
-	{
-		$frontendUrl = env('FRONTEND_APP_URL');
+        $url = "{$frontendUrl}?action=reset-password&token=" . $token . '&email=' . $this->email;
 
-		$url = "{$frontendUrl}?action=reset-password&token=" . $token . '&email=' . $this->email;
-
-		$this->notify(new ResetPasswordNotification($url));
-	}
+        $this->notify(new ResetPasswordNotification($url));
+    }
 }

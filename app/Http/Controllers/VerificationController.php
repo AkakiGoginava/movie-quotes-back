@@ -2,63 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EmailVerificationRequest;
+use App\Http\Requests\VerifyTokenRequest;
 use App\Models\EmailVerificationToken;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class VerificationController extends Controller
 {
-	public function requestVerification(): JsonResponse
-	{
-		$email = request('email');
+    public function requestVerification(EmailVerificationRequest $request): JsonResponse
+    {
+        $email = $request->validated()['email'];
 
-		$user = User::where('email', $email)->first();
+        $user = User::where('email', $email)->first();
 
-		if (!$user) {
-			return response()->json(['message' => 'User not found'], 404);
-		}
+        $user->sendEmailVerificationNotification();
 
-		if ($user->email_verified_at) {
-			return response()->json(['message' => 'User is Already verified'], 409);
-		}
+        return response()->json(['message' => 'Verification email sent'], 200);
+    }
 
-		$user->sendEmailVerificationNotification();
+    public function verify(VerifyTokenRequest $request): JsonResponse
+    {
+        $token = $request->validated()['token'];
 
-		return response()->json(['message' => 'Verification email sent'], 200);
-	}
+        $record = EmailVerificationToken::where('token', $token)
+            ->where('expires_at', '>', Carbon::now())
+            ->first();
 
-	public function verify(Request $request): JsonResponse
-	{
-		$token = request('token');
+        $user = User::find($record->user_id);
 
-		$record = EmailVerificationToken::where('token', $token)
-			->where('expires_at', '>', Carbon::now())
-			->first();
+        $user->markEmailAsVerified();
+        $record->delete();
 
-		if (!$record) {
-			return response()->json(['message' => 'Invalid token.'], 422);
-		}
+        auth('web')->logout();
 
-		$user = User::find($record->user_id);
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-		if (!$user) {
-			return response()->json(['message' => 'User not found.'], 404);
-		}
-
-		if ($user->hasVerifiedEmail()) {
-			return response()->json(['message' => 'Email already verified.'], 409);
-		}
-
-		$user->markEmailAsVerified();
-		$record->delete();
-
-		auth('web')->logout();
-
-		$request->session()->invalidate();
-		$request->session()->regenerateToken();
-
-		return response()->json(['message' => 'Email verified.'], 200);
-	}
+        return response()->json(['message' => 'Email verified.'], 200);
+    }
 }
