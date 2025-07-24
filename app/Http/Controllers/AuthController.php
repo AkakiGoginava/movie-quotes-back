@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EditUserRequest;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
@@ -104,6 +105,28 @@ class AuthController extends Controller
         }
 
         return response()->json(['user' => $user]);
+    }
+
+    public function editUser(EditUserRequest $request ): JsonResponse {
+        $attributes = $request->validated();
+
+        $user = Auth::user();
+
+        if ($request->filled('name')) {
+            $user->name = $attributes['name'];
+        }
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($attributes["password"]);
+        }
+
+        if ($request->hasFile('image')) {
+            $user->addMediaFromRequest('image')->toMediaCollection('avatar');
+        }
+
+        $user->save();
+
+        return response()->json(['message' => 'Edited successfully'], 200);
     }
 
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
