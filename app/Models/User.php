@@ -12,16 +12,15 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class User extends Authenticatable implements CanResetPassword, MustVerifyEmail, HasMedia
+class User extends Authenticatable implements CanResetPassword, HasMedia, MustVerifyEmail
 {
     use HasFactory;
-    use Notifiable;
     use InteractsWithMedia;
+    use Notifiable;
 
     protected $fillable = [
         'name',
@@ -48,11 +47,11 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail,
     public function getAvatarUrlAttribute(): string
     {
         $media = $this->getFirstMedia('avatar');
-        
+
         if ($media) {
             return $media->getUrl();
         }
-        
+
         return asset('images/default-avatar.jpg');
     }
 

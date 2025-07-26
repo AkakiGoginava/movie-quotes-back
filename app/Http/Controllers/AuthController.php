@@ -107,7 +107,8 @@ class AuthController extends Controller
         return response()->json(['user' => $user]);
     }
 
-    public function editUser(EditUserRequest $request ): JsonResponse {
+    public function editUser(EditUserRequest $request): JsonResponse
+    {
         $attributes = $request->validated();
 
         $user = Auth::user();
@@ -117,7 +118,7 @@ class AuthController extends Controller
         }
 
         if ($request->filled('password')) {
-            $user->password = Hash::make($attributes["password"]);
+            $user->password = Hash::make($attributes['password']);
         }
 
         if ($request->hasFile('image')) {
