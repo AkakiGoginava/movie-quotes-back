@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,8 +17,11 @@ Route::controller(AuthController::class)->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', 'logout')->name('logout');
         Route::get('/user', 'getUser')->name('getUser');
-        Route::post('/edit-user', 'editUser')->middleware('verified')->name('editUser');
     });
+});
+
+Route::controller(UserController::class)->middleware(['auth:sanctum', 'verified'])->prefix('/user')->name('user')->group(function () {
+    route::post('/update', 'update')->name('.update');
 });
 
 Route::controller(VerificationController::class)->prefix('email')->name('verification')->group(function () {
