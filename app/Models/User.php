@@ -12,17 +12,22 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
+class User extends Authenticatable implements CanResetPassword, HasMedia, MustVerifyEmail
 {
     use HasFactory;
+    use InteractsWithMedia;
     use Notifiable;
 
     protected $fillable = [
         'name',
         'email',
         'password',
+        'image',
     ];
 
     protected $hidden = [
@@ -30,12 +35,36 @@ class User extends Authenticatable implements CanResetPassword, MustVerifyEmail
         'remember_token',
     ];
 
+    protected $appends = ['avatar_url'];
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
         ];
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        $media = $this->getFirstMedia('avatar');
+
+        if ($media) {
+            return $media->getUrl();
+        }
+
+        return asset('images/default-avatar.jpg');
+    }
+
+    protected function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = Hash::make($value);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatar')
+            ->singleFile();
     }
 
     public function sendEmailVerificationNotification(): void
