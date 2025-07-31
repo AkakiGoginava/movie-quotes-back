@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InfoController;
+use App\Http\Controllers\MovieController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
@@ -27,4 +29,12 @@ Route::controller(UserController::class)->middleware(['auth:sanctum', 'verified'
 Route::controller(VerificationController::class)->prefix('email')->name('verification')->group(function () {
     Route::post('/request-verification', 'requestVerification')->name('.requestVerification');
     Route::post('/verify', 'verify')->middleware('throttle:6,1')->name('.verify');
+});
+
+Route::controller(InfoController::class)->group(function () {
+    Route::get('/categories', 'getCategories')->name('.categories');
+});
+
+Route::controller(MovieController::class)->middleware(['auth:sanctum', 'verified'])->prefix('movies')->name('movies')->group(function () {
+    Route::post('/', 'store')->name('.store');
 });
