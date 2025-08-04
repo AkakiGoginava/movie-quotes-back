@@ -10,7 +10,7 @@ class InfoController extends Controller
     public function getCategories(): JsonResponse
     {
         $categories = Category::all();
-        
+
         return response()->json(['categories' => $categories], 200);
     }
 }

@@ -11,7 +11,7 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             'Action',
-            'Comedy', 
+            'Comedy',
             'Drama',
             'Horror',
             'Romance',
@@ -19,7 +19,7 @@ class CategorySeeder extends Seeder
             'Sci-Fi',
             'Fantasy',
             'Adventure',
-            'Crime'
+            'Crime',
         ];
 
         foreach ($categories as $category) {

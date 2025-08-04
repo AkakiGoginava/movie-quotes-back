@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -16,6 +17,7 @@ class Movie extends Model implements HasMedia
         'director', 
         'year',
         'description',
+        'user_id',
     ];
 
     protected $casts = [
@@ -24,9 +26,16 @@ class Movie extends Model implements HasMedia
         'description' => 'json',
     ];
 
+    protected $appends = ['poster_url'];
+
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function registerMediaCollections(): void
@@ -39,6 +48,10 @@ class Movie extends Model implements HasMedia
     {
         $media = $this->getFirstMedia('poster');
 
-        return $media->getUrl();
+        if ($media) {
+            return $media->getUrl();
+        }
+
+        return null;
     }
 }

@@ -18,12 +18,17 @@ Route::controller(AuthController::class)->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', 'logout')->name('logout');
-        Route::get('/user', 'getUser')->name('getUser');
+
     });
 });
 
-Route::controller(UserController::class)->middleware(['auth:sanctum', 'verified'])->prefix('/user')->name('user')->group(function () {
-    route::post('/update', 'update')->name('.update');
+Route::controller(UserController::class)->middleware('auth:sanctum')->prefix('/user')->name('user')->group(function () {
+    Route::get('/', 'getUser')->name('.getUser');
+
+    Route::middleware('verified')->group(function () {
+        route::post('/update', 'update')->name('.update');
+        route::get('/movies', 'movies')->name('.movies');
+    });
 });
 
 Route::controller(VerificationController::class)->prefix('email')->name('verification')->group(function () {
@@ -36,5 +41,7 @@ Route::controller(InfoController::class)->group(function () {
 });
 
 Route::controller(MovieController::class)->middleware(['auth:sanctum', 'verified'])->prefix('movies')->name('movies')->group(function () {
-    Route::post('/', 'store')->name('.store');
+    Route::get('/', 'index')->name('.index');           
+    Route::post('/', 'store')->name('.store');          
+    Route::get('/{id}', 'show')->name('.show');         
 });
