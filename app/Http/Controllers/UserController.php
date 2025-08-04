@@ -6,6 +6,8 @@ use App\Http\Requests\EditUserRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class UserController extends Controller
 {
@@ -49,10 +51,19 @@ class UserController extends Controller
 
         $perPage = 9;
 
+        $query = $user->movies()->latest('id');
+
         $totalMovies = $user->movies()->count();
 
-        $movies = $user->movies()
-            ->latest('id') 
+        $movies = QueryBuilder::for($query)
+            ->allowedFilters([
+                AllowedFilter::callback('title', function ($query, $value) {
+                    $query->where(function ($q) use ($value) {
+                        $q->whereJsonContains('title->en', $value)
+                          ->orWhereJsonContains('title->ka', $value);
+                    });
+                }),
+            ])
             ->cursorPaginate($perPage)
             ->through(function ($movie) {
                 return [
