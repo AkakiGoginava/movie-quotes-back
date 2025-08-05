@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMovieRequest;
 use App\Http\Requests\UpdateMovieRequest;
+use App\Http\Resources\MovieResource;
 use App\Models\Movie;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,10 +14,8 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class MovieController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
-        $language = $request->header('Language', 'en');
-        
         $perPage = 9;
 
         $query = Movie::with(['categories', 'user'])->latest('id');
@@ -33,22 +32,8 @@ class MovieController extends Controller
                 }),
             ])
             ->cursorPaginate($perPage)
-            ->through(function ($movie) use ($language) {
-                return [
-                    'id'          => $movie->id,
-                    'title'       => $movie->title[$language] ?? '',
-                    'director'    => $movie->director[$language] ?? '',
-                    'description' => $movie->description[$language] ?? '',
-                    'year'        => $movie->year,
-                    'poster_url'  => $movie->poster_url,
-                    'categories'  => $movie->categories,
-                    'user'        => [
-                        'id'   => $movie->user->id,
-                        'name' => $movie->user->name,
-                    ],
-                    'created_at'  => $movie->created_at,
-                    'updated_at'  => $movie->updated_at,
-                ];
+            ->through(function ($movie) {
+                return new MovieResource($movie);
             });
 
         $response = $movies->toArray();
@@ -57,7 +42,7 @@ class MovieController extends Controller
         return response()->json($response, 200);
     }
 
-    public function show($id): JsonResponse
+    public function show(Request $request, $id): JsonResponse
     {
         $movie = Movie::with(['categories', 'user'])->find($id);
 
@@ -65,23 +50,11 @@ class MovieController extends Controller
             return response()->json(['message' => 'Movie not found'], 404);
         }
 
-        $movieData = [
-            'id'          => $movie->id,
-            'title'       => $movie->title,
-            'director'    => $movie->director,
-            'description' => $movie->description,
-            'year'        => $movie->year,
-            'poster_url'  => $movie->poster_url,
-            'categories'  => $movie->categories,
-            'user'        => [
-                'id'   => $movie->user->id,
-                'name' => $movie->user->name,
-            ],
-            'created_at'  => $movie->created_at,
-            'updated_at'  => $movie->updated_at,
-        ];
- 
-        return response()->json(['movie' => $movieData], 200);
+        $movieResource = new MovieResource($movie);
+        
+        return response()->json([
+            'movie' => $movieResource->toFullArray($request)
+        ], 200);
     }
 
     public function store(StoreMovieRequest $request): JsonResponse
@@ -104,7 +77,7 @@ class MovieController extends Controller
 
         return response()->json([
             'message' => 'Movie created successfully',
-            'movie'   => $movie->load(['categories', 'user']),
+            'movie'   => (new MovieResource($movie->load(['categories', 'user'])))->toFullArray($request),
         ], 201);
     }
 
@@ -120,29 +93,28 @@ class MovieController extends Controller
             return response()->json(['message' => 'Unauthorized to update this movie'], 403);
         }
 
-        $validated = $request->validated();
+        $attributes = $request->validated();
 
-        // Update fields
-        if (isset($validated['title'])) {
-            $movie->title = $validated['title'];
+        if (isset($attributes['title'])) {
+            $movie->title = $attributes['title'];
         }
 
-        if (isset($validated['director'])) {
-            $movie->director = $validated['director'];
+        if (isset($attributes['director'])) {
+            $movie->director = $attributes['director'];
         }
 
-        if (isset($validated['description'])) {
-            $movie->description = $validated['description'];
+        if (isset($attributes['description'])) {
+            $movie->description = $attributes['description'];
         }
 
-        if (isset($validated['year'])) {
-            $movie->year = $validated['year'];
+        if (isset($attributes['year'])) {
+            $movie->year = $attributes['year'];
         }
 
         $movie->save();
 
-        if (isset($validated['categories'])) {
-            $movie->categories()->sync($validated['categories']);
+        if (isset($attributes['categories'])) {
+            $movie->categories()->sync($attributes['categories']);
         }
 
         if ($request->hasFile('poster')) {
@@ -152,7 +124,7 @@ class MovieController extends Controller
 
         return response()->json([
             'message' => 'Movie updated successfully',
-            'movie'   => $movie->load(['categories', 'user']),
+            'movie'   => (new MovieResource($movie->load(['categories', 'user'])))->toFullArray($request),
         ], 200);
     }
 
