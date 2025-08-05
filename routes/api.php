@@ -18,7 +18,6 @@ Route::controller(AuthController::class)->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', 'logout')->name('logout');
-
     });
 });
 
@@ -27,7 +26,6 @@ Route::controller(UserController::class)->middleware('auth:sanctum')->prefix('/u
 
     Route::middleware('verified')->group(function () {
         route::post('/update', 'update')->name('.update');
-        route::get('/movies', 'movies')->name('.movies');
     });
 });
 
@@ -43,5 +41,7 @@ Route::controller(InfoController::class)->group(function () {
 Route::controller(MovieController::class)->middleware(['auth:sanctum', 'verified'])->prefix('movies')->name('movies')->group(function () {
     Route::get('/', 'index')->name('.index');           
     Route::post('/', 'store')->name('.store');          
-    Route::get('/{id}', 'show')->name('.show');         
+    Route::get('/{id}', 'show')->name('.show');
+    Route::post('/{id}', 'update')->name('.update');
+    Route::delete('/{id}', 'destroy')->name('.destroy');         
 });

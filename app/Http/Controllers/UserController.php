@@ -44,43 +44,4 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Edited successfully'], 200);
     }
-
-    public function movies(Request $request): JsonResponse
-    {
-        $user = Auth::user();
-
-        $perPage = 9;
-
-        $query = $user->movies()->latest('id');
-
-        $totalMovies = $user->movies()->count();
-
-        $movies = QueryBuilder::for($query)
-            ->allowedFilters([
-                AllowedFilter::callback('title', function ($query, $value) {
-                    $query->where(function ($q) use ($value) {
-                        $q->whereJsonContains('title->en', $value)
-                          ->orWhereJsonContains('title->ka', $value);
-                    });
-                }),
-            ])
-            ->cursorPaginate($perPage)
-            ->through(function ($movie) {
-                return [
-                    'id'          => $movie->id,
-                    'title'       => $movie->title['en'] ?? '',
-                    'director'    => $movie->director['en'] ?? '',
-                    'description' => $movie->description['en'] ?? '',
-                    'year'        => $movie->year,
-                    'poster_url'  => $movie->poster_url,
-                    'created_at'  => $movie->created_at,
-                    'updated_at'  => $movie->updated_at,
-                ];
-            });
-
-        $response = $movies->toArray();
-        $response['total_movies'] = $totalMovies;
-
-        return response()->json($response, 200);
-    }
 }
