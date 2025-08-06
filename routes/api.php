@@ -39,9 +39,9 @@ Route::controller(InfoController::class)->group(function () {
 });
 
 Route::controller(MovieController::class)->middleware(['auth:sanctum', 'verified'])->prefix('movies')->name('movies')->group(function () {
-    Route::get('/', 'index')->name('.index');           
-    Route::post('/', 'store')->name('.store');          
-    Route::get('/{id}', 'show')->name('.show');
-    Route::post('/{id}', 'update')->name('.update');
-    Route::delete('/{id}', 'destroy')->name('.destroy');         
+    Route::get('/', 'index')->name('.index');
+    Route::post('/', 'store')->name('.store');
+    Route::get('/{movie}', 'show')->name('.show');
+    Route::post('/{movie}', 'update')->name('.update');
+    Route::delete('/{movie}', 'destroy')->name('.destroy');
 });

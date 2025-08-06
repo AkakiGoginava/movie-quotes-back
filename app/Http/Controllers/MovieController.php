@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DestroyMovieRequest;
 use App\Http\Requests\StoreMovieRequest;
 use App\Http\Requests\UpdateMovieRequest;
 use App\Http\Resources\MovieResource;
 use App\Models\Movie;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -27,7 +27,7 @@ class MovieController extends Controller
                 AllowedFilter::callback('title', function ($query, $value) {
                     $query->where(function ($q) use ($value) {
                         $q->whereJsonContains('title->en', $value)
-                          ->orWhereJsonContains('title->ka', $value);
+                            ->orWhereJsonContains('title->ka', $value);
                     });
                 }),
             ])
@@ -42,18 +42,14 @@ class MovieController extends Controller
         return response()->json($response, 200);
     }
 
-    public function show(Request $request, $id): JsonResponse
+    public function show(Movie $movie): JsonResponse
     {
-        $movie = Movie::with(['categories', 'user'])->find($id);
-
-        if (!$movie) {
-            return response()->json(['message' => 'Movie not found'], 404);
-        }
+        $movie->load(['categories', 'user']);
 
         $movieResource = new MovieResource($movie);
-        
+
         return response()->json([
-            'movie' => $movieResource->toFullArray($request)
+            'movie' => $movieResource,
         ], 200);
     }
 
@@ -81,41 +77,18 @@ class MovieController extends Controller
         ], 201);
     }
 
-    public function update(UpdateMovieRequest $request, $id): JsonResponse
+    public function update(UpdateMovieRequest $request, Movie $movie): JsonResponse
     {
-        $movie = Movie::find($id);
-
-        if (!$movie) {
-            return response()->json(['message' => 'Movie not found'], 404);
-        }
-
-        if ($movie->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized to update this movie'], 403);
-        }
-
         $attributes = $request->validated();
 
-        if (isset($attributes['title'])) {
-            $movie->title = $attributes['title'];
-        }
-
-        if (isset($attributes['director'])) {
-            $movie->director = $attributes['director'];
-        }
-
-        if (isset($attributes['description'])) {
-            $movie->description = $attributes['description'];
-        }
-
-        if (isset($attributes['year'])) {
-            $movie->year = $attributes['year'];
-        }
+        $movie->title = $attributes['title'];
+        $movie->director = $attributes['director'];
+        $movie->description = $attributes['description'];
+        $movie->year = $attributes['year'];
 
         $movie->save();
 
-        if (isset($attributes['categories'])) {
-            $movie->categories()->sync($attributes['categories']);
-        }
+        $movie->categories()->sync($attributes['categories']);
 
         if ($request->hasFile('poster')) {
             $movie->clearMediaCollection('poster');
@@ -128,18 +101,8 @@ class MovieController extends Controller
         ], 200);
     }
 
-    public function destroy($id): JsonResponse
+    public function destroy(DestroyMovieRequest $request, Movie $movie): JsonResponse
     {
-        $movie = Movie::find($id);
-
-        if (!$movie) {
-            return response()->json(['message' => 'Movie not found'], 404);
-        }
-
-        if ($movie->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized to delete this movie'], 403);
-        }
-
         $movie->delete();
 
         return response()->json(['message' => 'Movie deleted successfully'], 200);

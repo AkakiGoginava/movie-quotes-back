@@ -22,9 +22,9 @@ class StoreMovieRequest extends FormRequest
             'description.ka' => ['required', 'string'],
 
             'categories'   => ['required', 'array', 'min:1'],
-            'categories.*' => ['exists:categories,id'],
+            'categories.*' => ['integer', 'exists:categories,id'],
 
-            'year'  => ['required', 'string', 'size:4', 'regex:/^\d{4}$/'],
+            'year'   => ['required', 'string', 'size:4', 'regex:/^\d{4}$/'],
             'poster' => ['required', 'file', 'image', 'max:2048'],
         ];
     }

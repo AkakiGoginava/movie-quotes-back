@@ -11,27 +11,6 @@ class MovieResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        $language = $request->header('Language', 'en');
-
-        return [
-            'id'          => $this->id,
-            'title'       => $this->title[$language] ?? '',
-            'director'    => $this->director[$language] ?? '',
-            'description' => $this->description[$language] ?? '',
-            'year'        => $this->year,
-            'poster_url'  => $this->poster_url,
-            'categories'  => $this->categories,
-            'user'        => [
-                'id'   => $this->user->id,
-                'name' => $this->user->name,
-            ],
-            'created_at'  => $this->created_at,
-            'updated_at'  => $this->updated_at,
-        ];
-    }
-
-    public function toFullArray(): array
-    {
         return [
             'id'          => $this->id,
             'title'       => $this->title,
@@ -44,8 +23,8 @@ class MovieResource extends JsonResource
                 'id'   => $this->user->id,
                 'name' => $this->user->name,
             ],
-            'created_at'  => $this->created_at,
-            'updated_at'  => $this->updated_at,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

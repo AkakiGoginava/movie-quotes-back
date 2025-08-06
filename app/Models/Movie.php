@@ -14,34 +14,34 @@ class Movie extends Model implements HasMedia
 
     protected $fillable = [
         'title',
-        'director', 
+        'director',
         'year',
         'description',
         'user_id',
     ];
 
     protected $casts = [
-        'title' => 'json',
-        'director' => 'json', 
-        'description' => 'json',
+        'title'       => 'array',
+        'director'    => 'array',
+        'description' => 'array',
     ];
 
     protected $appends = ['poster_url'];
-    
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('poster')
-        ->singleFile();
+            ->singleFile();
     }
-    
+
     public function getPosterUrlAttribute()
     {
         $media = $this->getFirstMedia('poster');
-        
+
         if ($media) {
             return $media->getUrl();
         }
-        
+
         return null;
     }
 
@@ -49,7 +49,7 @@ class Movie extends Model implements HasMedia
     {
         return $this->belongsToMany(Category::class);
     }
-    
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
