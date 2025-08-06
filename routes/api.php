@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InfoController;
+use App\Http\Controllers\MovieController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
@@ -16,15 +18,30 @@ Route::controller(AuthController::class)->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', 'logout')->name('logout');
-        Route::get('/user', 'getUser')->name('getUser');
     });
 });
 
-Route::controller(UserController::class)->middleware(['auth:sanctum', 'verified'])->prefix('/user')->name('user')->group(function () {
-    route::post('/update', 'update')->name('.update');
+Route::controller(UserController::class)->middleware('auth:sanctum')->prefix('/user')->name('user')->group(function () {
+    Route::get('/', 'getUser')->name('.getUser');
+
+    Route::middleware('verified')->group(function () {
+        route::post('/update', 'update')->name('.update');
+    });
 });
 
 Route::controller(VerificationController::class)->prefix('email')->name('verification')->group(function () {
     Route::post('/request-verification', 'requestVerification')->name('.requestVerification');
     Route::post('/verify', 'verify')->middleware('throttle:6,1')->name('.verify');
+});
+
+Route::controller(InfoController::class)->group(function () {
+    Route::get('/categories', 'getCategories')->name('.categories');
+});
+
+Route::controller(MovieController::class)->middleware(['auth:sanctum', 'verified'])->prefix('movies')->name('movies')->group(function () {
+    Route::get('/', 'index')->name('.index');
+    Route::post('/', 'store')->name('.store');
+    Route::get('/{movie}', 'show')->name('.show');
+    Route::post('/{movie}', 'update')->name('.update');
+    Route::delete('/{movie}', 'destroy')->name('.destroy');
 });
