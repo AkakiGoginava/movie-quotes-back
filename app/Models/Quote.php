@@ -4,27 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Movie extends Model implements HasMedia
+class Quote extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
     protected $fillable = [
-        'title',
-        'director',
-        'year',
-        'description',
-        'user_id',
+        'text',
+        'movie_id',
     ];
 
     protected $casts = [
-        'title'       => 'array',
-        'director'    => 'array',
-        'description' => 'array',
+        'text' => 'array',
     ];
 
     protected $appends = ['poster_url'];
@@ -46,18 +39,8 @@ class Movie extends Model implements HasMedia
         return null;
     }
 
-    public function categories(): BelongsToMany
+    public function movie(): BelongsTo
     {
-        return $this->belongsToMany(Category::class);
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function quotes(): HasMany
-    {
-        return $this->hasMany(Quote::class);
+        return $this->belongsTo(Movie::class);
     }
 }

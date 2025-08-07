@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InfoController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
@@ -44,4 +45,11 @@ Route::controller(MovieController::class)->middleware(['auth:sanctum', 'verified
     Route::get('/{movie}', 'show')->name('.show');
     Route::post('/{movie}', 'update')->name('.update');
     Route::delete('/{movie}', 'destroy')->name('.destroy');
+});
+
+Route::controller(QuoteController::class)->middleware(['auth:sanctum', 'verified'])->prefix('quotes')->name('quotes')->group(function () {
+    Route::get('/', 'index')->name('.index');
+    Route::post('/', 'store')->name('.store');
+    Route::post('/{quote}', 'update')->name('.update');
+    Route::delete('/{quote}', 'destroy')->name('.destroy');
 });
