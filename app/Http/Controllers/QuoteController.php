@@ -17,11 +17,14 @@ class QuoteController extends Controller
         $quotes = Quote::with('movie')
             ->where('user_id', Auth::id())
             ->latest()
-            ->get();
+            ->cursorPaginate(10);
 
-        return response()->json(
-            QuoteResource::collection($quotes)
-        );
+        return response()->json([
+            'data' => QuoteResource::collection($quotes->items()),
+            'next_cursor' => $quotes->nextCursor()?->encode(),
+            'prev_cursor' => $quotes->previousCursor()?->encode(),
+            'has_more' => $quotes->hasMorePages(),
+        ]);
     }
 
     public function store(StoreQuoteRequest $request): JsonResponse
