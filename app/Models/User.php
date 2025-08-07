@@ -73,6 +73,11 @@ class User extends Authenticatable implements CanResetPassword, HasMedia, MustVe
         return $this->hasMany(Movie::class);
     }
 
+    public function quotes(): HasMany
+    {
+        return $this->hasMany(Quote::class);
+    }
+
     public function sendEmailVerificationNotification(): void
     {
         $token = Str::random(64);

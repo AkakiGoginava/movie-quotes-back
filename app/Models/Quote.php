@@ -14,6 +14,7 @@ class Quote extends Model implements HasMedia
     protected $fillable = [
         'text',
         'movie_id',
+        'user_id',
     ];
 
     protected $casts = [
@@ -42,5 +43,10 @@ class Quote extends Model implements HasMedia
     public function movie(): BelongsTo
     {
         return $this->belongsTo(Movie::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
