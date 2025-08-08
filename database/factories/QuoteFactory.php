@@ -23,22 +23,17 @@ class QuoteFactory extends Factory
         ];
     }
 
-    public function configure(): static
+    public function forMovie(Movie $movie): static
     {
-        return $this->afterCreating(function (Quote $quote) {
-            $this->addPlaceholderPoster($quote);
-        });
+        return $this->state(fn (array $attributes) => [
+            'movie_id' => $movie->id,
+        ]);
     }
 
-    private function addPlaceholderPoster(Quote $quote): void
+    public function forUser(User $user): static
     {
-        $width = 400;
-        $height = 300;
-        $imageUrl = "https://picsum.photos/{$width}/{$height}?random=quote" . $quote->id;
-        
-        $quote->addMediaFromUrl($imageUrl)
-            ->usingName('Quote Poster')
-            ->usingFileName('quote_poster_' . $quote->id . '.jpg')
-            ->toMediaCollection('posters');
+        return $this->state(fn (array $attributes) => [
+            'user_id' => $user->id,
+        ]);
     }
 }

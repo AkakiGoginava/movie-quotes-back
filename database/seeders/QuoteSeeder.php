@@ -31,7 +31,5 @@ class QuoteSeeder extends Seeder
                 ->forUser($users->random())
                 ->create();
         }
-
-        $this->command->info('Quotes seeded successfully!');
     }
 }

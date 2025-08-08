@@ -20,7 +20,5 @@ class MovieSeeder extends Seeder
         }
 
         Movie::factory()->count(20)->create();
-
-        $this->command->info('Movies seeded successfully!');
     }
 }

@@ -39,20 +39,6 @@ class MovieFactory extends Factory
                 $randomCategories = $this->faker->randomElements($categoryIds, $this->faker->numberBetween(1, 3));
                 $movie->categories()->attach($randomCategories);
             }
-
-            $this->addPlaceholderPoster($movie);
         });
-    }
-
-    private function addPlaceholderPoster(Movie $movie): void
-    {
-        $width = 400;
-        $height = 600;
-        $imageUrl = "https://picsum.photos/{$width}/{$height}?random=" . $movie->id;
-        
-        $movie->addMediaFromUrl($imageUrl)
-            ->usingName('Movie Poster')
-            ->usingFileName('poster_' . $movie->id . '.jpg')
-            ->toMediaCollection('posters');
     }
 }

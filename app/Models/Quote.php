@@ -26,19 +26,19 @@ class Quote extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('poster')
+        $this->addMediaCollection('posters')
             ->singleFile();
     }
 
     public function getPosterUrlAttribute()
     {
-        $media = $this->getFirstMedia('poster');
+        $media = $this->getFirstMedia('posters');
 
         if ($media) {
             return $media->getUrl();
         }
 
-        return null;
+        return asset('images/placeholder.png');
     }
 
     public function movie(): BelongsTo

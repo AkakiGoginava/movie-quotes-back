@@ -44,7 +44,7 @@ class Movie extends Model implements HasMedia
             return $media->getUrl();
         }
 
-        return null;
+        return asset('images/placeholder.png');
     }
 
     public function categories(): BelongsToMany
