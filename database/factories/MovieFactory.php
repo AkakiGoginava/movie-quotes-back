@@ -26,7 +26,7 @@ class MovieFactory extends Factory
                 'en' => $this->faker->paragraph(),
                 'ka' => $this->faker->paragraph(),
             ],
-            'year' => $this->faker->numberBetween(1950, 2024),
+            'year'    => $this->faker->numberBetween(1950, 2024),
             'user_id' => User::factory(),
         ];
     }
@@ -35,7 +35,7 @@ class MovieFactory extends Factory
     {
         return $this->afterCreating(function (Movie $movie) {
             $categoryIds = Category::pluck('id')->toArray();
-            if (!empty($categoryIds)) {
+            if (! empty($categoryIds)) {
                 $randomCategories = $this->faker->randomElements($categoryIds, $this->faker->numberBetween(1, 3));
                 $movie->categories()->attach($randomCategories);
             }

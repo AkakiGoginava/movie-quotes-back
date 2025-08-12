@@ -22,14 +22,14 @@ class MovieResource extends JsonResource
                 'id'   => $this->user->id,
                 'name' => $this->user->name,
             ],
-            'quotes'       => $this->when(
+            'quotes' => $this->when(
                 $this->relationLoaded('quotes'),
                 function () {
                     return QuoteResource::simple($this->quotes);
                 }
             ),
-            'created_at'   => $this->created_at,
-            'updated_at'   => $this->updated_at,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

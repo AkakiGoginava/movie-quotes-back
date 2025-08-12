@@ -20,10 +20,10 @@ class QuoteController extends Controller
             ->cursorPaginate(10);
 
         return response()->json([
-            'data' => QuoteResource::collection($quotes->items()),
+            'data'        => QuoteResource::collection($quotes->items()),
             'next_cursor' => $quotes->nextCursor()?->encode(),
             'prev_cursor' => $quotes->previousCursor()?->encode(),
-            'has_more' => $quotes->hasMorePages(),
+            'has_more'    => $quotes->hasMorePages(),
         ]);
     }
 

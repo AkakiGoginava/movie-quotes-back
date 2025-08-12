@@ -19,8 +19,8 @@ class QuoteResource extends JsonResource
     {
         if ($this->simple) {
             return [
-                'id'   => $this->id,
-                'text' => $this->text,
+                'id'         => $this->id,
+                'text'       => $this->text,
                 'poster_url' => $this->poster_url,
             ];
         }

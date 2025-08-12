@@ -19,7 +19,7 @@ class QuoteFactory extends Factory
                 'ka' => $this->faker->sentence($this->faker->numberBetween(3, 8)),
             ],
             'movie_id' => Movie::factory(),
-            'user_id' => User::factory(),
+            'user_id'  => User::factory(),
         ];
     }
 

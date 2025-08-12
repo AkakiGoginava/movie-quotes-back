@@ -24,7 +24,7 @@ class QuoteSeeder extends Seeder
 
         foreach ($movies as $movie) {
             $quoteCount = fake()->numberBetween(1, 3);
-            
+
             Quote::factory()
                 ->count($quoteCount)
                 ->forMovie($movie)
