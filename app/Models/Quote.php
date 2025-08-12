@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -49,5 +50,35 @@ class Quote extends Model implements HasMedia
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function interactions(): HasMany
+    {
+        return $this->hasMany(QuoteInteraction::class);
+    }
+
+    public function likes(): HasMany
+    {
+        return $this->hasMany(QuoteInteraction::class)->where('type', 'like');
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(QuoteInteraction::class)->where('type', 'comment');
+    }
+
+    public function likesCount(): int
+    {
+        return $this->likes()->count();
+    }
+
+    public function commentsCount(): int
+    {
+        return $this->comments()->count();
+    }
+
+    public function isLikedBy(User $user): bool
+    {
+        return $this->likes()->where('user_id', $user->id)->exists();
     }
 }
