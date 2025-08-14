@@ -14,8 +14,8 @@ class QuoteController extends Controller
 {
     public function index(): JsonResponse
     {
-        $quotes = Quote::with('movie')
-            ->where('user_id', Auth::id())
+        $quotes = Quote::where('user_id', Auth::id())
+            ->with(['movie', 'comments.user'])
             ->latest()
             ->cursorPaginate(10);
 

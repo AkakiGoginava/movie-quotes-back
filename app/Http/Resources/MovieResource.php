@@ -25,7 +25,7 @@ class MovieResource extends JsonResource
             'quotes' => $this->when(
                 $this->relationLoaded('quotes'),
                 function () {
-                    return QuoteResource::simple($this->quotes);
+                    return QuoteResource::collection($this->quotes);
                 }
             ),
             'created_at' => $this->created_at,

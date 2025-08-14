@@ -52,19 +52,14 @@ class Quote extends Model implements HasMedia
         return $this->belongsTo(User::class);
     }
 
-    public function interactions(): HasMany
-    {
-        return $this->hasMany(QuoteInteraction::class);
-    }
-
     public function likes(): HasMany
     {
-        return $this->hasMany(QuoteInteraction::class)->where('type', 'like');
+        return $this->hasMany(QuoteLike::class);
     }
 
     public function comments(): HasMany
     {
-        return $this->hasMany(QuoteInteraction::class)->where('type', 'comment');
+        return $this->hasMany(QuoteComment::class);
     }
 
     public function likesCount(): int

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommentRequest;
+use App\Http\Resources\CommentResource;
 use App\Models\Quote;
-use App\Models\QuoteInteraction;
+use App\Models\QuoteLike;
+use App\Models\QuoteComment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,10 +16,9 @@ class QuoteInteractionController extends Controller
     {
         $userId = Auth::id();
 
-        $existingLike = QuoteInteraction::where([
+        $existingLike = QuoteLike::where([
             'user_id'  => $userId,
             'quote_id' => $quote->id,
-            'type'     => 'like',
         ])->first();
 
         if ($existingLike) {
@@ -25,11 +26,9 @@ class QuoteInteractionController extends Controller
             $liked = false;
             $message = 'Quote unliked successfully';
         } else {
-            QuoteInteraction::create([
+            QuoteLike::create([
                 'user_id'  => $userId,
                 'quote_id' => $quote->id,
-                'type'     => 'like',
-                'content'  => null,
             ]);
             $liked = true;
             $message = 'Quote liked successfully';
@@ -44,10 +43,9 @@ class QuoteInteractionController extends Controller
 
     public function addComment(StoreCommentRequest $request, Quote $quote): JsonResponse
     {
-        $comment = QuoteInteraction::create([
+        $comment = QuoteComment::create([
             'user_id'  => Auth::id(),
             'quote_id' => $quote->id,
-            'type'     => 'comment',
             'content'  => $request->content,
         ]);
 
@@ -55,6 +53,7 @@ class QuoteInteractionController extends Controller
 
         return response()->json([
             'message' => 'Comment added successfully',
+            'comment' => new CommentResource($comment),
         ], 201);
     }
 }
