@@ -18,7 +18,7 @@ class QuoteResource extends JsonResource
             'movie_title'    => $this->movie->title,
             'movie_year'     => $this->movie->year,
             'likes_count'    => $this->likesCount(),
-            'is_liked'      => $this->isLikedBy(Auth::user()),
+            'is_liked'       => $this->isLikedBy(Auth::user()),
             'comments_count' => $this->commentsCount(),
             'comments'       => CommentResource::collection($this->comments),
         ];

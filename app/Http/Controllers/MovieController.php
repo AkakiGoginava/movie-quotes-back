@@ -39,7 +39,7 @@ class MovieController extends Controller
             });
 
         $response = $movies->toArray();
-        $response['total_movies'] = $totalMovies;
+        $response['total_items'] = $totalMovies;
 
         return response()->json($response, 200);
     }

@@ -59,7 +59,7 @@ class Quote extends Model implements HasMedia
 
     public function comments(): HasMany
     {
-        return $this->hasMany(QuoteComment::class);
+        return $this->hasMany(QuoteComment::class)->latest();
     }
 
     public function likesCount(): int
@@ -79,16 +79,18 @@ class Quote extends Model implements HasMedia
 
     public function scopeSearchText($query, $value)
     {
-        return $query->whereJsonContains('text->en', $value)
-                     ->orWhereJsonContains('text->ka', $value);
+        return $query->where(function ($q) use ($value) {
+            $q->where('text->en', 'LIKE', "%{$value}%")
+              ->orWhere('text->ka', 'LIKE', "%{$value}%");
+        });
     }
 
     public function scopeSearchMovieTitle($query, $value)
     {
         return $query->whereHas('movie', function ($movieQuery) use ($value) {
             $movieQuery->where(function ($mq) use ($value) {
-                $mq->whereJsonContains('title->en', $value)
-                   ->orWhereJsonContains('title->ka', $value);
+                $mq->where('title->en', 'LIKE', "%{$value}%")
+                   ->orWhere('title->ka', 'LIKE', "%{$value}%");
             });
         });
     }
