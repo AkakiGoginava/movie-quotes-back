@@ -76,4 +76,43 @@ class Quote extends Model implements HasMedia
     {
         return $this->likes()->where('user_id', $user->id)->exists();
     }
+
+    public function scopeSearchText($query, $value)
+    {
+        return $query->whereJsonContains('text->en', $value)
+                     ->orWhereJsonContains('text->ka', $value);
+    }
+
+    public function scopeSearchMovieTitle($query, $value)
+    {
+        return $query->whereHas('movie', function ($movieQuery) use ($value) {
+            $movieQuery->where(function ($mq) use ($value) {
+                $mq->whereJsonContains('title->en', $value)
+                   ->orWhereJsonContains('title->ka', $value);
+            });
+        });
+    }
+
+    public function scopeSearchAll($query, $value)
+    {
+        return $query->where(function ($q) use ($value) {
+            $q->searchText($value)
+              ->orWhere(function ($subQuery) use ($value) {
+                  $subQuery->searchMovieTitle($value);
+              });
+        });
+    }
+
+    public function scopeSearch($query, $value)
+    {
+        if (str_starts_with($value, '@')) {
+            $searchTerm = substr($value, 1);
+            return $query->searchMovieTitle($searchTerm);
+        } elseif (str_starts_with($value, '#')) {
+            $searchTerm = substr($value, 1);
+            return $query->searchText($searchTerm);
+        } else {
+            return $query->searchAll($value);
+        }
+    }
 }
