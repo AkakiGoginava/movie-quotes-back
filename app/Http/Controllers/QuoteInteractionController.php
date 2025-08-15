@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Quote;
-use App\Models\QuoteLike;
 use App\Models\QuoteComment;
+use App\Models\QuoteLike;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 

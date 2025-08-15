@@ -27,7 +27,7 @@ class QuoteController extends Controller
             ->allowedFilters([
                 AllowedFilter::callback('search', function ($query, $value) {
                     $query->search($value);
-                })
+                }),
             ])
             ->cursorPaginate($perPage)
             ->through(function ($quote) {

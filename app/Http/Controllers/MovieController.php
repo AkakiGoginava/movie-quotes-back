@@ -28,8 +28,8 @@ class MovieController extends Controller
             ->allowedFilters([
                 AllowedFilter::callback('title', function ($query, $value) {
                     $query->where(function ($q) use ($value) {
-                        $q->whereJsonContains('title->en', $value)
-                            ->orWhereJsonContains('title->ka', $value);
+                        $q->where('title->en', 'LIKE', "%{$value}%")
+                            ->orWhere('title->ka', 'LIKE', "%{$value}%");
                     });
                 }),
             ])
