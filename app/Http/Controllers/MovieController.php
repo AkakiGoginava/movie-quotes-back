@@ -18,16 +18,18 @@ class MovieController extends Controller
     {
         $perPage = 9;
 
-        $query = Movie::with(['categories', 'user'])->latest('id');
+        $query = Movie::with(['categories', 'user'])
+            ->where('user_id', Auth::id())
+            ->latest('id');
 
-        $totalMovies = Movie::count();
+        $totalMovies = Movie::where('user_id', Auth::id())->count();
 
         $movies = QueryBuilder::for($query)
             ->allowedFilters([
                 AllowedFilter::callback('title', function ($query, $value) {
                     $query->where(function ($q) use ($value) {
-                        $q->whereJsonContains('title->en', $value)
-                            ->orWhereJsonContains('title->ka', $value);
+                        $q->where('title->en', 'LIKE', "%{$value}%")
+                            ->orWhere('title->ka', 'LIKE', "%{$value}%");
                     });
                 }),
             ])
@@ -37,14 +39,14 @@ class MovieController extends Controller
             });
 
         $response = $movies->toArray();
-        $response['total_movies'] = $totalMovies;
+        $response['total_items'] = $totalMovies;
 
         return response()->json($response, 200);
     }
 
     public function show(Movie $movie): JsonResponse
     {
-        $movie->load(['categories', 'user']);
+        $movie->load(['categories', 'user', 'quotes']);
 
         $movieResource = new MovieResource($movie);
 
@@ -73,7 +75,7 @@ class MovieController extends Controller
 
         return response()->json([
             'message' => 'Movie created successfully',
-            'movie'   => (new MovieResource($movie->load(['categories', 'user'])))->toFullArray($request),
+            'movie'   => (new MovieResource($movie->load(['categories', 'user']))),
         ], 201);
     }
 
@@ -97,7 +99,7 @@ class MovieController extends Controller
 
         return response()->json([
             'message' => 'Movie updated successfully',
-            'movie'   => (new MovieResource($movie->load(['categories', 'user'])))->toFullArray($request),
+            'movie'   => (new MovieResource($movie->load(['categories', 'user']))),
         ], 200);
     }
 

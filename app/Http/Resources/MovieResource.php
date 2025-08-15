@@ -7,22 +7,27 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class MovieResource extends JsonResource
 {
-    protected $language;
-
     public function toArray(Request $request): array
     {
         return [
-            'id'          => $this->id,
-            'title'       => $this->title,
-            'director'    => $this->director,
-            'description' => $this->description,
-            'year'        => $this->year,
-            'poster_url'  => $this->poster_url,
-            'categories'  => $this->categories,
-            'user'        => [
+            'id'           => $this->id,
+            'title'        => $this->title,
+            'director'     => $this->director,
+            'description'  => $this->description,
+            'year'         => $this->year,
+            'poster_url'   => $this->poster_url,
+            'categories'   => $this->categories,
+            'quotes_count' => $this->quotes()->count(),
+            'user'         => [
                 'id'   => $this->user->id,
                 'name' => $this->user->name,
             ],
+            'quotes' => $this->when(
+                $this->relationLoaded('quotes'),
+                function () {
+                    return QuoteResource::collection($this->quotes);
+                }
+            ),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
