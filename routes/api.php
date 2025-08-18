@@ -65,5 +65,4 @@ Route::controller(NotificationController::class)->middleware(['auth:sanctum', 'v
     Route::get('/', 'index')->name('.index');
     Route::post('/{notification}/read', 'markAsRead')->name('.read');
     Route::post('/mark-all-read', 'markAllAsRead')->name('.mark-all-read');
-    Route::get('/unread-count', 'unreadCount')->name('.unread-count');
 });

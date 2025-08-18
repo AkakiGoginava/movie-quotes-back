@@ -5,17 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\NotificationResource;
 
 class NotificationController extends Controller
 {
     public function index(): JsonResponse
     {
         $notifications = Notification::forUser(Auth::id())
-            ->with(['fromUser:id,name,avatar_url', 'notifiable'])
+            ->with(['fromUser', 'quote'])
             ->latest()
-            ->paginate(20);
+            ->get();
 
-        return response()->json($notifications);
+            return response()->json([
+                'data' => NotificationResource::collection($notifications),
+                'total_unread' => Notification::forUser(Auth::id())->unread()->count(),
+            ]);
     }
 
     public function markAsRead(Notification $notification): JsonResponse
@@ -36,14 +40,5 @@ class NotificationController extends Controller
             ->update(['read_at' => now()]);
 
         return response()->json(['message' => 'All notifications marked as read']);
-    }
-
-    public function unreadCount(): JsonResponse
-    {
-        $count = Notification::forUser(Auth::id())
-            ->unread()
-            ->count();
-
-        return response()->json(['unread_count' => $count]);
     }
 }

@@ -26,7 +26,7 @@ class QuoteCommented implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('user.' . $this->quote->user_id),
+            new PrivateChannel('App.Models.User.' . $this->quote->user_id),
         ];
     }
 
@@ -37,6 +37,8 @@ class QuoteCommented implements ShouldBroadcast
 
     public function broadcastWith(): array
     {
+        $user = $this->user;
+
         return [
             'quote_id' => $this->quote->id,
             'quote_text' => $this->quote->text,
@@ -46,9 +48,9 @@ class QuoteCommented implements ShouldBroadcast
                 'created_at' => $this->comment->created_at,
             ],
             'commenter' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-                'avatar_url' => $this->user->avatar_url,
+                'id' => $user->id,
+                'name' => $user->name,
+                'avatar_url' => $user->getAvatarUrlAttribute(),
             ],
             'message' => 'Commented on your quote',
             'timestamp' => now()->toISOString(),

@@ -52,10 +52,6 @@ class QuoteInteractionController extends Controller
                     'type' => 'like',
                     'notifiable_id' => $quote->id,
                     'notifiable_type' => Quote::class,
-                    'data' => [
-                        'quote_text' => $quote->text,
-                        'liker_name' => $user->name,
-                    ],
                 ]);
                 
                 broadcast(new QuoteLiked($quote, $user));
@@ -89,11 +85,6 @@ class QuoteInteractionController extends Controller
                 'type' => 'comment',
                 'notifiable_id' => $quote->id,
                 'notifiable_type' => Quote::class,
-                'data' => [
-                    'quote_text' => $quote->text,
-                    'comment_content' => $comment->content,
-                    'commenter_name' => $user->name,
-                ],
             ]);
             
             broadcast(new QuoteCommented($quote, $comment, $user));

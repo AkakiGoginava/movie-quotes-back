@@ -17,12 +17,10 @@ class Notification extends Model
         'type',
         'notifiable_id',
         'notifiable_type',
-        'data',
         'read_at',
     ];
 
     protected $casts = [
-        'data' => 'array',
         'read_at' => 'datetime',
     ];
 
@@ -34,6 +32,11 @@ class Notification extends Model
     public function fromUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'from_user_id');
+    }
+
+    public function quote()
+    {
+        return $this->belongsTo(Quote::class, 'notifiable_id');
     }
 
     public function notifiable(): MorphTo
