@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InfoController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\QuoteInteractionController;
 use App\Http\Controllers\UserController;
@@ -58,4 +59,11 @@ Route::controller(QuoteController::class)->middleware(['auth:sanctum', 'verified
 Route::controller(QuoteInteractionController::class)->middleware(['auth:sanctum', 'verified'])->prefix('quotes')->name('quotes.interactions')->group(function () {
     Route::post('/{quote}/like', 'toggleLike')->name('.like');
     Route::post('/{quote}/comments', 'addComment')->name('.comments.store');
+});
+
+Route::controller(NotificationController::class)->middleware(['auth:sanctum', 'verified'])->prefix('notifications')->name('notifications')->group(function () {
+    Route::get('/', 'index')->name('.index');
+    Route::post('/{notification}/read', 'markAsRead')->name('.read');
+    Route::post('/mark-all-read', 'markAllAsRead')->name('.mark-all-read');
+    Route::get('/unread-count', 'unreadCount')->name('.unread-count');
 });
