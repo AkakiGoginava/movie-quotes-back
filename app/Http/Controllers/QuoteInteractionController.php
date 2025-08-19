@@ -29,12 +29,12 @@ class QuoteInteractionController extends Controller
             $existingLike->delete();
             $liked = false;
             $message = 'Quote unliked successfully';
-            
+
             Notification::where([
-                'user_id' => $quote->user_id,
-                'from_user_id' => $userId,
-                'type' => 'like',
-                'notifiable_id' => $quote->id,
+                'user_id'         => $quote->user_id,
+                'from_user_id'    => $userId,
+                'type'            => 'like',
+                'notifiable_id'   => $quote->id,
                 'notifiable_type' => Quote::class,
             ])->delete();
         } else {
@@ -44,16 +44,16 @@ class QuoteInteractionController extends Controller
             ]);
             $liked = true;
             $message = 'Quote liked successfully';
-            
+
             if ($quote->user_id !== $userId) {
                 Notification::create([
-                    'user_id' => $quote->user_id,
-                    'from_user_id' => $userId,
-                    'type' => 'like',
-                    'notifiable_id' => $quote->id,
+                    'user_id'         => $quote->user_id,
+                    'from_user_id'    => $userId,
+                    'type'            => 'like',
+                    'notifiable_id'   => $quote->id,
                     'notifiable_type' => Quote::class,
                 ]);
-                
+
                 broadcast(new QuoteLiked($quote, $user));
             }
         }
@@ -69,7 +69,7 @@ class QuoteInteractionController extends Controller
     {
         $userId = Auth::id();
         $user = Auth::user();
-        
+
         $comment = QuoteComment::create([
             'user_id'  => $userId,
             'quote_id' => $quote->id,
@@ -80,13 +80,13 @@ class QuoteInteractionController extends Controller
 
         if ($quote->user_id !== $userId) {
             Notification::create([
-                'user_id' => $quote->user_id,
-                'from_user_id' => $userId,
-                'type' => 'comment',
-                'notifiable_id' => $quote->id,
+                'user_id'         => $quote->user_id,
+                'from_user_id'    => $userId,
+                'type'            => 'comment',
+                'notifiable_id'   => $quote->id,
                 'notifiable_type' => Quote::class,
             ]);
-            
+
             broadcast(new QuoteCommented($quote, $comment, $user));
         }
 

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\NotificationResource;
 use App\Models\Notification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\NotificationResource;
 
 class NotificationController extends Controller
 {
@@ -16,10 +16,10 @@ class NotificationController extends Controller
             ->latest()
             ->get();
 
-            return response()->json([
-                'data' => NotificationResource::collection($notifications),
-                'total_unread' => Notification::forUser(Auth::id())->unread()->count(),
-            ]);
+        return response()->json([
+            'data'         => NotificationResource::collection($notifications),
+            'total_unread' => Notification::forUser(Auth::id())->unread()->count(),
+        ]);
     }
 
     public function markAsRead(Notification $notification): JsonResponse
