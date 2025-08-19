@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Events\QuoteCommented;
+use App\Events\QuoteLiked;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -117,6 +119,36 @@ class Quote extends Model implements HasMedia
             return $query->searchText($searchTerm);
         } else {
             return $query->searchAll($value);
+        }
+    }
+
+    public function notifyLike(User $liker): void
+    {
+        if ($this->user_id !== $liker->id) {
+            Notification::create([
+                'user_id'         => $this->user_id,
+                'from_user_id'    => $liker->id,
+                'type'            => 'like',
+                'notifiable_id'   => $this->id,
+                'notifiable_type' => self::class,
+            ]);
+
+            broadcast(new QuoteLiked($this, $liker));
+        }
+    }
+
+    public function notifyComment(User $commenter, QuoteComment $comment): void
+    {
+        if ($this->user_id !== $commenter->id) {
+            Notification::create([
+                'user_id'         => $this->user_id,
+                'from_user_id'    => $commenter->id,
+                'type'            => 'comment',
+                'notifiable_id'   => $this->id,
+                'notifiable_type' => self::class,
+            ]);
+
+            broadcast(new QuoteCommented($this, $comment, $commenter));
         }
     }
 }

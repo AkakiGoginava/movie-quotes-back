@@ -18,7 +18,7 @@ class QuoteController extends Controller
     {
         $perPage = 9;
 
-        $query = Quote::with(['movie', 'comments.user'])
+        $query = Quote::with(['movie', 'user', 'comments.user'])
             ->latest('id');
 
         $totalQuotes = Quote::count();
@@ -52,7 +52,7 @@ class QuoteController extends Controller
             ->toMediaCollection('posters');
 
         return response()->json(
-            new QuoteResource($quote->load('movie')),
+            new QuoteResource($quote->load(['movie', 'user'])),
             201
         );
     }
@@ -68,7 +68,7 @@ class QuoteController extends Controller
         }
 
         return response()->json(
-            new QuoteResource($quote->load('movie'))
+            new QuoteResource($quote->load(['movie', 'user']))
         );
     }
 

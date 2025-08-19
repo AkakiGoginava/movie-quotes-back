@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\QuoteCommented;
+use App\Events\QuoteLiked;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Resources\CommentResource;
+use App\Models\Notification;
 use App\Models\Quote;
 use App\Models\QuoteComment;
 use App\Models\QuoteLike;
@@ -14,7 +17,8 @@ class QuoteInteractionController extends Controller
 {
     public function toggleLike(Quote $quote): JsonResponse
     {
-        $userId = Auth::id();
+        $user = Auth::user();
+        $userId = $user->id;
 
         $existingLike = QuoteLike::where([
             'user_id'  => $userId,
@@ -25,6 +29,14 @@ class QuoteInteractionController extends Controller
             $existingLike->delete();
             $liked = false;
             $message = 'Quote unliked successfully';
+
+            Notification::where([
+                'user_id'         => $quote->user_id,
+                'from_user_id'    => $userId,
+                'type'            => 'like',
+                'notifiable_id'   => $quote->id,
+                'notifiable_type' => Quote::class,
+            ])->delete();
         } else {
             QuoteLike::create([
                 'user_id'  => $userId,
@@ -32,6 +44,8 @@ class QuoteInteractionController extends Controller
             ]);
             $liked = true;
             $message = 'Quote liked successfully';
+
+            $quote->notifyLike($user);
         }
 
         return response()->json([
@@ -43,13 +57,18 @@ class QuoteInteractionController extends Controller
 
     public function addComment(StoreCommentRequest $request, Quote $quote): JsonResponse
     {
+        $userId = Auth::id();
+        $user = Auth::user();
+
         $comment = QuoteComment::create([
-            'user_id'  => Auth::id(),
+            'user_id'  => $userId,
             'quote_id' => $quote->id,
             'content'  => $request->content,
         ]);
 
         $comment->load('user');
+
+        $quote->notifyComment($user, $comment);
 
         return response()->json([
             'message' => 'Comment added successfully',
