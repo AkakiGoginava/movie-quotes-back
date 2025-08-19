@@ -6,6 +6,7 @@ use App\Http\Resources\NotificationResource;
 use App\Models\Notification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class NotificationController extends Controller
 {
@@ -24,9 +25,7 @@ class NotificationController extends Controller
 
     public function markAsRead(Notification $notification): JsonResponse
     {
-        if ($notification->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        Gate::authorize('update', $notification);
 
         $notification->markAsRead();
 

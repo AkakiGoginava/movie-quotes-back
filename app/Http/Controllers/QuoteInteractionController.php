@@ -17,8 +17,8 @@ class QuoteInteractionController extends Controller
 {
     public function toggleLike(Quote $quote): JsonResponse
     {
-        $userId = Auth::id();
         $user = Auth::user();
+        $userId = $user->id;
 
         $existingLike = QuoteLike::where([
             'user_id'  => $userId,
@@ -45,17 +45,7 @@ class QuoteInteractionController extends Controller
             $liked = true;
             $message = 'Quote liked successfully';
 
-            if ($quote->user_id !== $userId) {
-                Notification::create([
-                    'user_id'         => $quote->user_id,
-                    'from_user_id'    => $userId,
-                    'type'            => 'like',
-                    'notifiable_id'   => $quote->id,
-                    'notifiable_type' => Quote::class,
-                ]);
-
-                broadcast(new QuoteLiked($quote, $user));
-            }
+            $quote->notifyLike($user);
         }
 
         return response()->json([
@@ -78,17 +68,7 @@ class QuoteInteractionController extends Controller
 
         $comment->load('user');
 
-        if ($quote->user_id !== $userId) {
-            Notification::create([
-                'user_id'         => $quote->user_id,
-                'from_user_id'    => $userId,
-                'type'            => 'comment',
-                'notifiable_id'   => $quote->id,
-                'notifiable_type' => Quote::class,
-            ]);
-
-            broadcast(new QuoteCommented($quote, $comment, $user));
-        }
+        $quote->notifyComment($user, $comment);
 
         return response()->json([
             'message' => 'Comment added successfully',
