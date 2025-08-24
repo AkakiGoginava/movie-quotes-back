@@ -13,6 +13,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -36,20 +37,19 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $attributes = $request->validated();
-
         $credentials = Arr::only($attributes, ['email', 'password']);
         $remember = $attributes['remember'] ?? false;
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
-
-            return response()->json(['message' => 'Login successful'], 201);
+            return response()->json(['message' => __('Login successful')], 201);
         }
 
+        $errorMessage = __('auth.failed');
         return response()->json(['errors' => [
-            'email'    => ['Invalid credentials'],
-            'password' => ['Invalid credentials']],
-        ], 422);
+            'email'    => [$errorMessage],
+            'password' => [$errorMessage],
+        ]], 422);
     }
 
     public function googleAuth(Request $request): JsonResponse
