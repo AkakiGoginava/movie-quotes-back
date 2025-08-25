@@ -56,8 +56,8 @@ class AuthController extends Controller
     public function googleAuth(Request $request): JsonResponse
     {
         $code = $request->input('code');
-        
-        if (!$code) {
+
+        if (! $code) {
             return response()->json(['message' => 'Authorization code is required'], 400);
         }
 
@@ -68,8 +68,8 @@ class AuthController extends Controller
             $user = User::firstOrCreate(
                 ['email' => $googleUser->getEmail()],
                 [
-                    'name' => $googleUser->getName(),
-                    'google_id' => $googleUser->getId(),
+                    'name'              => $googleUser->getName(),
+                    'google_id'         => $googleUser->getId(),
                     'email_verified_at' => now(),
                 ]
             );
