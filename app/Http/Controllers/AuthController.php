@@ -55,16 +55,15 @@ class AuthController extends Controller
 
     public function googleAuth(Request $request): JsonResponse
     {
-        $code = request('code');
+        $code = $request->input('code');
 
         if (! $code) {
-            return response()->json([
-                'message' => 'Authorization code is invalid',
-            ], 400);
+            return response()->json(['message' => 'Authorization code is required'], 400);
         }
 
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $tokenResponse = Socialite::driver('google')->getAccessTokenResponse($code);
+            $googleUser = Socialite::driver('google')->userFromToken($tokenResponse['access_token']);
 
             $user = User::firstOrCreate(
                 ['email' => $googleUser->getEmail()],
@@ -80,9 +79,7 @@ class AuthController extends Controller
 
             return response()->json(['user' => $user], 200);
         } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Authentication failed',
-            ], 400);
+            return response()->json(['message' => 'Authentication failed: ' . $e->getMessage()], 400);
         }
     }
 
