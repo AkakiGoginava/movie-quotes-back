@@ -26,11 +26,11 @@ class VerifyEmailNotification extends Notification
     {
         $verificationUrl = $this->verificationUrl($notifiable);
         $name = $notifiable->name;
-        $content = 'Thanks for joining Movie quotes! We really appreciate it. Please click the button below to verify your account:';
-        $linkName = 'Verify account';
+        $content = __('mail.verify_content');
+        $linkName = __('mail.verify_link_name');
 
         return (new MailMessage)
-            ->subject('Please verify your email')
+            ->subject(__('mail.verify_subject'))
             ->markdown('email.index', [
                 'url'      => $verificationUrl,
                 'name'     => $name,
