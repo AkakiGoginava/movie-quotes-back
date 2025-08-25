@@ -13,7 +13,6 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -42,10 +41,12 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
+
             return response()->json(['message' => __('Login successful')], 201);
         }
 
         $errorMessage = __('auth.failed');
+
         return response()->json(['errors' => [
             'email'    => [$errorMessage],
             'password' => [$errorMessage],

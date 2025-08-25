@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\QuoteCommented;
-use App\Events\QuoteLiked;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Notification;
