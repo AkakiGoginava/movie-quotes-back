@@ -25,7 +25,6 @@ jobs:
             npm run build
 
             php artisan config:clear
-            php artisan cache:clear
 
             pm2 restart movie-quotes-queue
 
