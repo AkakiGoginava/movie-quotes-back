@@ -5,8 +5,18 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+beforeEach(function () {
+    // Quick session fix
+    config(['session.driver' => 'array']);
+    $this->app->forgetInstance('session');
+    $this->app->forgetInstance('session.store');
+    $this->startSession();
+});
+
 describe('User Login', function () {
     it('logs in with valid credentials', function () {
+        config(['sanctum.stateful' => []]);
+
         $user = User::factory()->create([
             'email'    => 'loginuser@example.com',
             'password' => 'password',
@@ -32,6 +42,8 @@ describe('User Login', function () {
     });
 
     it('logs out successfully', function () {
+        config(['sanctum.stateful' => []]);
+
         $user = User::factory()->create([
             'email'    => 'logoutuser@example.com',
             'password' => 'password',
