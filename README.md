@@ -53,6 +53,14 @@ back-movie-quotes-akaki-goginava/
 └── README.md
 ```
 
+## Database Schema
+
+The MySQL database schema for Movie Quotes is visualized and maintained using [DrawSQL](https://drawsql.app/).
+
+You can view the schema diagram here:
+
+[Database Design Diagram](readme/assets/movie-quotes-db-diagram.png)
+
 ## Getting Started
 
 ### Prerequisites
