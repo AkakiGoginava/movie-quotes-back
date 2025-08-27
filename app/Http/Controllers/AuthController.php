@@ -36,8 +36,12 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $attributes = $request->validated();
-        $credentials = Arr::only($attributes, ['email', 'password']);
+        $login = $attributes['email'];
+        $password = $attributes['password'];
         $remember = $attributes['remember'] ?? false;
+
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
+        $credentials = [$field => $login, 'password' => $password];
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
@@ -50,7 +54,7 @@ class AuthController extends Controller
         return response()->json(['errors' => [
             'email'    => [$errorMessage],
             'password' => [$errorMessage],
-        ]], 422);
+    ]], 422);
     }
 
     public function googleAuth(Request $request): JsonResponse
