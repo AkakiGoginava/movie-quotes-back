@@ -12,7 +12,6 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -54,7 +53,7 @@ class AuthController extends Controller
         return response()->json(['errors' => [
             'email'    => [$errorMessage],
             'password' => [$errorMessage],
-    ]], 422);
+        ]], 422);
     }
 
     public function googleAuth(Request $request): JsonResponse
