@@ -31,7 +31,7 @@ class UserController extends Controller
         }
 
         if ($request->filled('password')) {
-             $user->password = $attributes['password'];
+            $user->password = $attributes['password'];
         }
 
         if ($request->hasFile('image')) {

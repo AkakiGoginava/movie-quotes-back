@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,5 +16,10 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void {}
+    public function boot(): void
+    {
+        if (App::environment('testing')) {
+            app('router')->pushMiddlewareToGroup('api', StartSession::class);
+        }
+    }
 }
