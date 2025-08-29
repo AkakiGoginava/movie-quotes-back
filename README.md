@@ -73,7 +73,7 @@ You can view the schema diagram here:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/RedberryInternship/quizwiz-back-akaki-goginava.git
+    git clone https://github.com/RedberryInternship/back-movie-quotes-akaki-goginava.git
     cd back-movie-quotes-akaki-goginava
     ```
 2. Install PHP dependencies:
