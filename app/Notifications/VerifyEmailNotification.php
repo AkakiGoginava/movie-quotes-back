@@ -41,7 +41,7 @@ class VerifyEmailNotification extends Notification
 
     public function verificationUrl(object $notifiable): string
     {
-        $frontendUrl = env('FRONTEND_APP_URL');
+        $frontendUrl = config('app.frontend_url');
 
         return "{$frontendUrl}?action=verify&token={$this->token}&email={$notifiable->email}";
     }

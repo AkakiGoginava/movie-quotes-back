@@ -95,7 +95,7 @@ class User extends Authenticatable implements CanResetPassword, HasMedia, MustVe
 
     public function sendPasswordResetNotification($token): void
     {
-        $frontendUrl = env('FRONTEND_APP_URL');
+        $frontendUrl = config('app.frontend_url');
 
         $url = "{$frontendUrl}?action=reset-password&token=" . $token . '&email=' . $this->email;
 
