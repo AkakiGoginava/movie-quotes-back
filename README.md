@@ -73,8 +73,8 @@ You can view the schema diagram here:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/RedberryInternship/back-movie-quotes-akaki-goginava.git
-    cd back-movie-quotes-akaki-goginava
+    git clone https://github.com/AkakiGoginava/movie-quotes-front.git
+    cd movie-quotes-back
     ```
 2. Install PHP dependencies:
     ```bash
@@ -88,9 +88,12 @@ You can view the schema diagram here:
     ```bash
     npm run build
     ```
-5. Copy the example environment file and configure it:
+5. Copy the example environment files and configure them:
     ```bash
     cp .env.example .env
+    ```
+    ```bash
+    cp .env.testing.example .env.testing
     ```
 6. Generate application key:
     ```bash
@@ -118,12 +121,16 @@ You can view the schema diagram here:
 
 -   Set correct `DB_CONNECTION`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` in your `.env`.
 -   Configure `MAIL_*` variables for email notifications.
--   Set `APP_URL` and configure `config/cors.php` for allowed origins.
+-   Set `APP_URL` to configure `config/cors.php` for allowed origins.
 -   Set up `SANCTUM_STATEFUL_DOMAINS` for SPA authentication (should match your frontend domain, e.g. `app.local.test:5173`).
 -   Configure Google OAuth:
     -   Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URI` in your `.env`.
     -   Make sure `GOOGLE_REDIRECT_URI` matches the callback URL set in your Google Cloud Console.
 -   Set `SESSION_DOMAIN` in your `.env` to match your app domain (e.g. `local.test`) for proper session cookie handling across subdomains.
+-   Configure Pusher for broadcasting:
+    -   Set `PUSHER_APP_ID`, `PUSHER_APP_KEY`, `PUSHER_APP_CLUSTER` and `PUSHER_APP_SECRET` in your `.env`.
+-   Configure database credentials for testing:
+    -   Set `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` in your `.env.testing`.
 
 ## Running Tests
 
