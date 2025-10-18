@@ -17,14 +17,14 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << EOF
             cd apps
-            cd movie-quotes-akaki-goginava/back-movie-quotes-akaki-goginava
+            cd movie-quotes/movie-quotes-back
             git pull
 
             composer install
             npm ci
             npm run build
 
-            php artisan config:clear
+            php artisan optimize
 
             pm2 restart movie-quotes-queue
 
