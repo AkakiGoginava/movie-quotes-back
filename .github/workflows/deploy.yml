@@ -26,7 +26,7 @@ jobs:
 
             php artisan optimize
 
-            pm2 restart movie-quotes-queue
+            pm2 restart laravel-queue
 
             sudo systemctl reload nginx
           EOF
